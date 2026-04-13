@@ -50,11 +50,7 @@ public class TaskServiceImpl implements TaskService {
 
         Task task = Task.create(req.getTitle(), req.getDescription(), board, parent, req.getPositionIndex());
 
-        if (req.getPriority() != null) {
-            task.update(null, null, null, req.getPriority(), req.getDueDate(), resolveAssignee(req.getAssigneeId()));
-        } else if (req.getDueDate() != null || req.getAssigneeId() != null) {
-            task.update(null, null, null, null, req.getDueDate(), resolveAssignee(req.getAssigneeId()));
-        }
+        task.updateOptionalFields(req.getPriority(), req.getDueDate(), resolveAssignee(req.getAssigneeId()));
 
         return taskMapper.toResponse(taskRepository.save(task));
     }

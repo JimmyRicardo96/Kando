@@ -157,6 +157,13 @@ public class Task {
         this.assignee = assignee;
     }
 
+    // Actualiza solo los campos opcionales (útil en flujos de creación y sync)
+    public void updateOptionalFields(Priority priority, Instant dueDate, User assignee) {
+        if (priority != null) this.priority = priority;
+        this.dueDate = dueDate;
+        this.assignee = assignee;
+    }
+
     public void updatePath(String newPath) {
         Objects.requireNonNull(newPath, "path is required");
         this.path = newPath;
