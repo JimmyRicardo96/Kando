@@ -1,5 +1,7 @@
 package com.jrdm.Kando.domain.model;
+
 import com.github.f4b6a3.ulid.UlidCreator;
+import com.jrdm.Kando.domain.enums.Priority;
 import com.jrdm.Kando.domain.enums.TaskStatus;
 import jakarta.persistence.*;
 import org.springframework.data.annotation.CreatedBy;
@@ -10,6 +12,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.Instant;
 import java.util.*;
+
 @Entity
 @Table(
         name = "tasks",
@@ -39,13 +42,24 @@ public class Task {
     @Column(nullable = false, length = 20)
     private TaskStatus status;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 10)
+    private Priority priority;
+
     // LexoRank / Fractional Indexing
     @Column(name = "position_index", nullable = false, length = 50)
     private String positionIndex;
 
+    @Column(name = "due_date")
+    private Instant dueDate;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "board_id", nullable = false)
     private Board board;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "assignee_id")
+    private User assignee;
 
     // Jerarquía recursiva
     @ManyToOne(fetch = FetchType.LAZY)
@@ -108,6 +122,7 @@ public class Task {
         task.parent = parent;
         task.positionIndex = positionIndex;
         task.status = TaskStatus.TODO;
+        task.priority = Priority.MEDIUM;
 
         return task;
     }
@@ -117,7 +132,6 @@ public class Task {
         if (this.id == null) {
             this.id = UlidCreator.getUlid().toString();
         }
-        // Path simple: el Service recalcula en jerarquías complejas
         if (this.parent == null) {
             this.path = this.id + ".";
         } else {
@@ -133,9 +147,17 @@ public class Task {
         this.completedAt = (newStatus == TaskStatus.DONE) ? Instant.now() : null;
     }
 
+    public void update(String title, String description, String positionIndex,
+                       Priority priority, Instant dueDate, User assignee) {
+        if (title != null && !title.isBlank()) this.title = title.trim();
+        if (description != null) this.description = description;
+        if (positionIndex != null && !positionIndex.isBlank()) this.positionIndex = positionIndex;
+        if (priority != null) this.priority = priority;
+        this.dueDate = dueDate;
+        this.assignee = assignee;
+    }
+
     public void updatePath(String newPath) {
-        // CONTRATO: Solo el TaskService puede llamar este método
-        // después de validar aciclicidad y calcular el path correcto.
         Objects.requireNonNull(newPath, "path is required");
         this.path = newPath;
     }
@@ -153,8 +175,11 @@ public class Task {
     public String getTitle() { return title; }
     public String getDescription() { return description; }
     public TaskStatus getStatus() { return status; }
+    public Priority getPriority() { return priority; }
     public String getPositionIndex() { return positionIndex; }
+    public Instant getDueDate() { return dueDate; }
     public Board getBoard() { return board; }
+    public User getAssignee() { return assignee; }
     public Task getParent() { return parent; }
     public Set<Task> getSubtasks() { return subtasks; }
     public String getPath() { return path; }
