@@ -10,10 +10,12 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface TaskMapper {
 
-    @Mapping(source = "board.id",           target = "boardId")
-    @Mapping(source = "parent.id",          target = "parentId")
-    @Mapping(source = "assignee.id",        target = "assigneeId")
-    @Mapping(source = "assignee.displayName", target = "assigneeDisplayName")
+    @Mapping(source = "board.id",  target = "boardId")
+    @Mapping(source = "parent.id", target = "parentId")
+    @Mapping(target = "assigneeId",
+             expression = "java(task.getAssignee() != null ? task.getAssignee().getId() : null)")
+    @Mapping(target = "assigneeDisplayName",
+             expression = "java(task.getAssignee() != null ? task.getAssignee().getDisplayName() : null)")
     TaskResponse toResponse(Task task);
 
     List<TaskResponse> toResponseList(List<Task> tasks);
