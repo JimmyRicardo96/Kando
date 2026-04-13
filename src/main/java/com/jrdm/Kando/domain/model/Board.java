@@ -57,7 +57,6 @@ public class Board {
     private Instant deletedAt;
 
     protected Board() {
-        // Requerido por JPA
     }
 
     public static Board create(String name, String description, User owner) {

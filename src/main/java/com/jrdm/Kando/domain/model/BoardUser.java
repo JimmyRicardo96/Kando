@@ -49,7 +49,6 @@ public class BoardUser {
     private Instant joinedAt;
 
     protected BoardUser() {
-        // Requerido por JPA
     }
 
     public static BoardUser create(Board board, User user, BoardRole role) {

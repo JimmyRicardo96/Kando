@@ -17,8 +17,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Component
 @RequiredArgsConstructor
+@Component
 public class JwtFilter extends OncePerRequestFilter{
     //El filtro que intercepta cada request
 
