@@ -93,10 +93,7 @@ public class SyncServiceImpl implements SyncService {
         String positionIndex = item.getPositionIndex() != null ? item.getPositionIndex() : "m";
 
         Task task = Task.create(title, item.getDescription(), board, parent, positionIndex);
-        task.update(null, null, null,
-                item.getPriority(),
-                item.getDueDate(),
-                resolveAssignee(item.getAssigneeId()));
+        task.updateOptionalFields(item.getPriority(), item.getDueDate(), resolveAssignee(item.getAssigneeId()));
 
         if (item.getStatus() != null) {
             task.moveToStatus(item.getStatus());
